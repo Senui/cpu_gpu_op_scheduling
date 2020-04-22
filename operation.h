@@ -1,11 +1,10 @@
-#ifndef CPU_GPU_SCHEDULING_H_
-#define CPU_GPU_SCHEDULING_H_
+#ifndef OPERATION_H_
+#define OPERATION_H_
 
 #include <iostream>
 #include <string>
 #include <unordered_map>
 #include <vector>
-#include <stdexcept>
 
 class SimObject {};
 
@@ -64,75 +63,6 @@ struct Operation {
   std::vector<OperationImpl *> implementations_;
 };
 
-struct OperationRegistry {
-  static Operation *GetOperation(const std::string &op_name) {
-    if (operations_.find(op_name) == operations_.end()) {
-      throw std::runtime_error("Operation not found in registry!");
-    }
-    return operations_[op_name];
-  }
-
-  static bool AddOperationImpl(const std::string &op_name,
-                               OpComputeTarget target, OperationImpl *impl) {
-    std::cout << "AddOperationImpl " << op_name << std::endl;
-    auto *op = operations_[op_name];
-    if (op == nullptr) {
-      op = new Operation(op_name);
-      operations_[op_name] = op;
-    }
-    op->AddOperationImpl(target, impl);
-    return true;
-  }
-
-private:
-  /// think about std::string as key - easy to make a typo
-  /// FIXME memory leak
-  static std::unordered_map<std::string, Operation *> operations_;
-};
-
-// Scheduling different type of operations
-class Scheduler {
-public:
-  Scheduler() {}
-
-  ~Scheduler() {
-    for (auto *op : operations_) {
-      delete op;
-    }
-  }
-
-  void AddOperation(Operation *op) { operations_.push_back(op); }
-
-  // Schedule the operations
-  void ScheduleOps() {
-    for (auto *op : operations_) {
-      if (kComputeTarget == kCuda && op->IsComputeTargetSupported(kCuda)) {
-        op->SelectComputeTarget(kCuda);
-      } else if (kComputeTarget == kOpenCl &&
-                 op->IsComputeTargetSupported(kOpenCl)) {
-        op->SelectComputeTarget(kOpenCl);
-      } else {
-        op->SelectComputeTarget(kCpu);
-      }
-      scheduled_ops_.push_back(op);
-    }
-  }
-
-  void RunScheduledOps() {
-    for (auto *op : scheduled_ops_) {
-      if (timestep % op->freq_ == 0) {
-        (*op)();
-      }
-    }
-    timestep++;
-  }
-
-private:
-  size_t timestep = 0;
-  std::vector<Operation *> scheduled_ops_;
-  std::vector<Operation *> operations_;
-};
-
 // --------------------------------------------------------------------------
 // Example Operation Displacement
 
@@ -187,4 +117,5 @@ struct CellGrowthCpu : public OperationImpl {
   static bool registered_;
 };
 
-#endif // CPU_GPU_SCHEDULING_H_
+#endif  // OPERATION_H_
+

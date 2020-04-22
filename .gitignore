@@ -1,5 +1,9 @@
+*.swp
+*.swo
+*.ctags
 cpu_gpu_scheduling
 .vscode/c_cpp_properties.json
 .vscode/settings.json
 build/*
 .vscode/*
+
