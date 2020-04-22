@@ -1,7 +1,11 @@
+#ifndef CPU_GPU_SCHEDULING_H_
+#define CPU_GPU_SCHEDULING_H_
+
 #include <iostream>
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <stdexcept>
 
 class SimObject {};
 
@@ -62,6 +66,9 @@ struct Operation {
 
 struct OperationRegistry {
   static Operation *GetOperation(const std::string &op_name) {
+    if (operations_.find(op_name) == operations_.end()) {
+      throw std::runtime_error("Operation not found in registry!");
+    }
     return operations_[op_name];
   }
 
@@ -193,13 +200,4 @@ struct CellGrowthCpu : public OperationImpl {
 bool CellGrowthCpu::registered_ = OperationRegistry::AddOperationImpl(
     "CellGrowthOp", kCpu, new CellGrowthCpu());
 
-int main() {
-  Scheduler s;
-  s.AddOperation(OperationRegistry::GetOperation("DisplacementOp"));
-  s.AddOperation(OperationRegistry::GetOperation("CellGrowthOp"));
-  s.ScheduleOps();
-  size_t T = 1; // number of timesteps
-  for (size_t t = 0; t < T; ++t) {
-    s.RunScheduledOps();
-  }
-}
+#endif // CPU_GPU_SCHEDULING_H_
