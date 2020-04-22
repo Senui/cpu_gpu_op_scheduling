@@ -3,7 +3,7 @@
 
 // Scheduling different type of operations
 class Scheduler {
-public:
+ public:
   Scheduler() {}
 
   ~Scheduler() {
@@ -38,7 +38,7 @@ public:
     timestep++;
   }
 
-private:
+ private:
   size_t timestep = 0;
   std::vector<Operation *> scheduled_ops_;
   std::vector<Operation *> operations_;
@@ -46,13 +46,13 @@ private:
 
 int main() {
   Scheduler s;
-  auto* op_registry = OperationRegistry::GetInstance();
+  auto *op_registry = OperationRegistry::GetInstance();
   s.AddOperation(op_registry->GetOperation("DisplacementOp"));
   s.AddOperation(op_registry->GetOperation("CellGrowthOp"));
   s.AddOperation(op_registry->GetOperation("ExternalOp"));
   std::cout << "Heeee" << std::endl;
   s.ScheduleOps();
-  size_t T = 1; // number of timesteps
+  size_t T = 1;  // number of timesteps
   for (size_t t = 0; t < T; ++t) {
     s.RunScheduledOps();
   }

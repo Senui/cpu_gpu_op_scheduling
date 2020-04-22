@@ -8,7 +8,7 @@
 
 class SimObject {};
 
-enum OpComputeTarget { kCpu, kCuda, kOpenCl }; // ... kOpenClFPGA ...
+enum OpComputeTarget { kCpu, kCuda, kOpenCl };  // ... kOpenClFPGA ...
 
 // Param::compute_target
 static const int kComputeTarget = kCuda;
@@ -118,4 +118,3 @@ struct CellGrowthCpu : public OperationImpl {
 };
 
 #endif  // OPERATION_H_
-

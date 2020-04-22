@@ -1,13 +1,12 @@
 #include "operation_registry.h"
 
-
 OperationRegistry::~OperationRegistry() {
-  for (auto& pair : operations_) {
+  for (auto &pair : operations_) {
     delete pair.second;
   }
 }
 
-OperationRegistry* OperationRegistry::GetInstance() {
+OperationRegistry *OperationRegistry::GetInstance() {
   static OperationRegistry operation_registry;
   return &operation_registry;
 }
@@ -21,7 +20,8 @@ Operation *OperationRegistry::GetOperation(const std::string &op_name) {
 }
 
 bool OperationRegistry::AddOperationImpl(const std::string &op_name,
-                             OpComputeTarget target, OperationImpl *impl) {
+                                         OpComputeTarget target,
+                                         OperationImpl *impl) {
   // workaround for bug in unordered_map
   if (operations_.size() == 0) {
     operations_.reserve(10);
@@ -38,4 +38,3 @@ bool OperationRegistry::AddOperationImpl(const std::string &op_name,
 OperationRegistry::OperationRegistry() {
   std::cout << "Create OperationRegistry" << std::endl;
 }
-

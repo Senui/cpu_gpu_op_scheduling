@@ -12,4 +12,3 @@ struct ExternalOp : public OperationImpl {
 
   static bool registered_;
 };
-
