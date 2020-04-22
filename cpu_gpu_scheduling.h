@@ -74,6 +74,7 @@ struct OperationRegistry {
 
   static bool AddOperationImpl(const std::string &op_name,
                                OpComputeTarget target, OperationImpl *impl) {
+    std::cout << "AddOperationImpl " << op_name << std::endl;
     auto *op = operations_[op_name];
     if (op == nullptr) {
       op = new Operation(op_name);
@@ -88,8 +89,6 @@ private:
   /// FIXME memory leak
   static std::unordered_map<std::string, Operation *> operations_;
 };
-
-std::unordered_map<std::string, Operation *> OperationRegistry::operations_;
 
 // Scheduling different type of operations
 class Scheduler {
@@ -152,9 +151,6 @@ struct DisplacementOpCpu : public OperationImpl {
   static bool registered_;
 };
 
-bool DisplacementOpCpu::registered_ = OperationRegistry::AddOperationImpl(
-    "DisplacementOp", kCpu, new DisplacementOpCpu());
-
 struct DisplacementOpCuda : public OperationImplGpu {
   virtual ~DisplacementOpCuda() {}
   void operator()() override {
@@ -164,9 +160,6 @@ struct DisplacementOpCuda : public OperationImplGpu {
   static bool registered_;
 };
 
-bool DisplacementOpCuda::registered_ = OperationRegistry::AddOperationImpl(
-    "DisplacementOp", kCuda, new DisplacementOpCuda());
-
 struct DisplacementOpOpenCL : public OperationImplGpu {
   virtual ~DisplacementOpOpenCL() {}
   void operator()() override {
@@ -175,9 +168,6 @@ struct DisplacementOpOpenCL : public OperationImplGpu {
 
   static bool registered_;
 };
-
-bool DisplacementOpOpenCL::registered_ = OperationRegistry::AddOperationImpl(
-    "DisplacementOp", kOpenCl, new DisplacementOpOpenCL());
 
 // --------------------------------------------------------------------------
 // Example Operation Cell growth
@@ -196,8 +186,5 @@ struct CellGrowthCpu : public OperationImpl {
 
   static bool registered_;
 };
-
-bool CellGrowthCpu::registered_ = OperationRegistry::AddOperationImpl(
-    "CellGrowthOp", kCpu, new CellGrowthCpu());
 
 #endif // CPU_GPU_SCHEDULING_H_

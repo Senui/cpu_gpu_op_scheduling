@@ -13,5 +13,3 @@ struct ExternalOp : public OperationImpl {
   static bool registered_;
 };
 
-bool ExternalOp::registered_ = OperationRegistry::AddOperationImpl(
-    "ExternalOp", kCpu, new ExternalOp());
