@@ -17,9 +17,15 @@ struct OperationImpl {
   virtual ~OperationImpl() {}
   virtual void operator()(SimObject *so) = 0;
   virtual void operator()() = 0;
+  virtual bool IsGpuOperation() { return false; }
 };
 
 struct OperationImplGpu : public OperationImpl {
+  virtual void InitializeGpuData() = 0;
+  virtual void UpdateCpuData() = 0;
+
+  bool IsGpuOperation() override { return true; }
+
   virtual ~OperationImplGpu() {}
   // sub class to avoid overriding this operator
   void operator()(SimObject *so) override {
@@ -34,7 +40,16 @@ struct Operation {
   ~Operation() {}
 
   void operator()(SimObject *so) { (*implementations_[active_target_])(so); }
-  void operator()() { (*implementations_[active_target_])(); }
+  void operator()() {
+    auto op_impl = implementations_[active_target_];
+    if (op_impl->IsGpuOperation()) {
+      static_cast<OperationImplGpu*>(op_impl)->InitializeGpuData();
+    }
+    (*op_impl)();
+    if (op_impl->IsGpuOperation()) {
+      static_cast<OperationImplGpu*>(op_impl)->UpdateCpuData();
+    }
+  }
 
   void AddOperationImpl(OpComputeTarget target, OperationImpl *impl) {
     if (implementations_.size() <= target) {
@@ -82,6 +97,14 @@ struct DisplacementOpCpu : public OperationImpl {
 };
 
 struct DisplacementOpCuda : public OperationImplGpu {
+  void InitializeGpuData() override {
+    std::cout << "Initialize GPU buffers" << std::endl;
+  }
+
+  void UpdateCpuData() override {
+    std::cout << "Update CPU data" << std::endl;
+  }
+
   virtual ~DisplacementOpCuda() {}
   void operator()() override {
     std::cout << "GPU (CUDA) displacement op" << std::endl;
@@ -91,6 +114,14 @@ struct DisplacementOpCuda : public OperationImplGpu {
 };
 
 struct DisplacementOpOpenCL : public OperationImplGpu {
+  void InitializeGpuData() override {
+    std::cout << "Initialize GPU buffers" << std::endl;
+  }
+
+  void UpdateCpuData() override {
+    std::cout << "Update CPU data" << std::endl;
+  }
+
   virtual ~DisplacementOpOpenCL() {}
   void operator()() override {
     std::cout << "GPU (OpenCL) displacement op" << std::endl;

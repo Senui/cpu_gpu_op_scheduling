@@ -48,7 +48,6 @@ int main() {
   s.AddOperation(op_registry->GetOperation("DisplacementOp"));
   s.AddOperation(op_registry->GetOperation("CellGrowthOp"));
   s.AddOperation(op_registry->GetOperation("ExternalOp"));
-  std::cout << "Heeee" << std::endl;
   s.ScheduleOps();
   size_t T = 1;  // number of timesteps
   for (size_t t = 0; t < T; ++t) {
