@@ -6,11 +6,9 @@ class Scheduler {
  public:
   Scheduler() {}
 
-  ~Scheduler() {
-    for (auto *op : operations_) {
-      delete op;
-    }
-  }
+  // Do not delete Operations in `operation_` or `scheduled_ops`; this is taken
+  // care of by the OperationRegistry
+  ~Scheduler() {}
 
   void AddOperation(Operation *op) { operations_.push_back(op); }
 
